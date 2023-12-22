@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: goat-storytelling-agent
+Version: 0.0.1
+License-File: LICENSE
+Requires-Dist: requests==2.31.0
+Requires-Dist: transformers==4.35.2

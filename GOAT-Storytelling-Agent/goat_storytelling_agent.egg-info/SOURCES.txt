@@ -1,0 +1,16 @@
+.gitignore
+LICENSE
+README.md
+pyproject.toml
+requirements.txt
+goat_storytelling_agent/config.py
+goat_storytelling_agent/plan.py
+goat_storytelling_agent/prompts.py
+goat_storytelling_agent/storytelling_agent.py
+goat_storytelling_agent/utils.py
+goat_storytelling_agent.egg-info/PKG-INFO
+goat_storytelling_agent.egg-info/SOURCES.txt
+goat_storytelling_agent.egg-info/dependency_links.txt
+goat_storytelling_agent.egg-info/requires.txt
+goat_storytelling_agent.egg-info/top_level.txt
+images/GOAT-story.png
