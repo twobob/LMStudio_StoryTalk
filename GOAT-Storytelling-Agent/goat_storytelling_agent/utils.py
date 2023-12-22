@@ -19,7 +19,7 @@ def remove_last_n_words(text, n):
                 split_text[-i] = line[:-n]
                 break
         i += 1
-        if i > len(split_text):
+        if i == len(split_text):
             break
     split_text = split_text[:-lines_to_slice]
     text = "\n".join([" ".join(line) for line in split_text])
