@@ -5,4 +5,6 @@ each project folder can optionally contain a file with one or more of these conf
 
 ![image](https://github.com/twobob/LMStudio_StoryTalk/assets/915232/a61bc158-efbf-48e6-828c-f6172a2638b6)
 
+Folders are searched for files called story.txt and the text in them is rendered to speech
+
 YouTube rendered example: https://www.youtube.com/watch?v=oFqGNnXA-ys
