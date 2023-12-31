@@ -21,9 +21,6 @@ if __name__ == '__main__':
 
     # pip install anything else that complains about being missing when you first run this
 
-
-
-
     from datetime import datetime
     import nltk
     from tqdm import tqdm
@@ -78,9 +75,10 @@ if __name__ == '__main__':
             # Check if the file exists
             with open(batch_file_path, "x") as file:
                 file.write(batch_content)
-                return f"Batch file 'concat.bat' created successfully."
+                return f"Batch file '{batch_file_path}' created successfully."
         except FileExistsError:
-            return f"Batch file 'concat.bat' already exists."
+            return f"Batch file '{batch_file_path}' already exists."
+
     # Run the batch file as a subprocess
     def run_batch_file(batch_file_path):
         try:
@@ -89,11 +87,9 @@ if __name__ == '__main__':
         except subprocess.CalledProcessError as e:
             return f"An error occurred while executing the batch file: {e.output}"
 
-
     def convert_wav_to_mp3(wav_file, fx_file, mp3_file, folder='audio'):
         os.makedirs(folder, exist_ok=True)
         
-    
         fx_file = os.path.join(folder, fx_file)
         mp3_file = os.path.join(folder, mp3_file)
 
@@ -279,11 +275,7 @@ if __name__ == '__main__':
         filename = f"{prefix}_output_{timestamp}.wav"
         fx_filename = f"{prefix}_output_{timestamp}_fx.wav"
         mp3_filename = f"{prefix}_output_{timestamp}.mp3"
-
-        #filename = f"{nickname}_output_{timestamp}.wav"
-        #fx_filename = f"{nickname}_output_{timestamp}_fx.wav"
-        #mp3_filename = f"{nickname}_output_{timestamp}.mp3"                
-
+             
         if not any(f.endswith('_fx.wav') for f in os.listdir(directory)):
 
             # If the configuration file exists, use it to override the global settings
@@ -409,7 +401,6 @@ if __name__ == '__main__':
                                     #test it for validity (confidence that it is "a known language to whisper")
                                     total_gibberish = gibberish_extractor.process_audio(sentence_filename, GIBBERISH_DETECTION_THRESHOLD)
 
-
                             else:
                                 tts.tts_to_file(text=sentence, 
                                                 speed=SPEAKER_SPEED, 
@@ -426,8 +417,7 @@ if __name__ == '__main__':
 
                                 new_file = inference.infer(checkpoint=checkpoint,wav_file=sentence_filename, sample_rate=sample_rate, steps=8, gt=False, device=device)
 
-                                #swap result to old output  
-                                
+                                #swap result to old output                                 
                                 edited_file_path = sentence_filename.rsplit(".", 1)[0] + "_edited.wav"
                                 os.replace( r"C:\Users\new\dev\tts\nuwave2\test_sample\result\result.wav", edited_file_path)
                                 clean_and_backup_audio(edited_file_path, NOISE_REDUCTION_PROPORTION)   
@@ -451,12 +441,7 @@ if __name__ == '__main__':
                     # Save the concatenated audio to the original filename
                     concatenated_audio.export(filename, format="wav")
 
-                
-                    # Optionally, remove the subfolder with the rendered sentences
-
-
                 convert_wav_to_mp3(filename, fx_filename, mp3_filename, directory)
-
         else:
             print(f"skipped {filename}")
     print(f"generation completed")
