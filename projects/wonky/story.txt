@@ -1,0 +1,19 @@
+This is a short example.
+
+It spans several lines of text.
+
+They end with the full-stop character, also known as "Period".
+
+Having a file called "story.txt" in a folder will cause it to be rendered, assuming it has not already.
+
+Each sentence will be rendered, the relative speed of the speech can be controlled via SPEAKER_SPEED and is set to 0.9 out of the box.
+
+The generation is then checked for suitability, using whisper, with a degree of confidence, regenerating if it fails the test.
+
+The adjustment in the code for the degree of confidence is called GIBBERISH_DETECTION_THRESHOLD and defaults to 0.85.
+
+The samples that pass this test are then optionally upsampled to 48 k. This parameter is called UPSAMPLE and the default value is "True".
+
+Finally a neural noise reduction model is used to clean the results. The amount by which the signal is cleaned is set with the variable NOISE_REDUCTION_PROPORTION and it defaults to 0.4.
+
+This concludes our exciting example explanation.
