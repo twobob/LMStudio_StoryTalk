@@ -1,31 +1,37 @@
 if __name__ == '__main__':
 
-    from datetime import datetime
-    #pip install nltk
-    # python -m nltk.downloader punkt
-    import nltk
-
-    #pip install tqdm
-    from tqdm import tqdm
-    import gibberish_extractor
-
-    import os
-    #pip install pydub
-    from pydub import AudioSegment
-
-    import re
-    import subprocess
-
-    import os
-    import time
-
     # use pip to install torch nightly with cuda support
     # install commands here https://pytorch.org/get-started/locally/
     # example:  
     # pip3 install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu121
     #
-    import torch
+    # pip install nltk
+    # python -m nltk.downloader punkt
+    
+    # pip install tqdm
+    # pip install pydub
+    # pip install pedalboard
+    # pip install TTS
 
+    # pip install soundfile
+    # pip install numpy
+    # pip install matplotlib
+    # pip install PyWavelets
+    # pip install noisereduce
+
+    # pip install anything else that complains about being missing when you first run this
+
+    from datetime import datetime
+    import nltk
+    from tqdm import tqdm
+    import gibberish_extractor
+    import os
+    from pydub import AudioSegment
+    import re
+    import subprocess
+    import os
+    import time
+    import torch
     import sys
 
     # Directory to be added
@@ -37,12 +43,7 @@ if __name__ == '__main__':
     import nuwave2
     from nuwave2 import inference
 
-    # pip install noisereduce
     from noise_reducer import clean_and_backup_audio
-
-    # pip install pedalboard
-    # pip install TTS
-    # pip install numpy and anything else that complains about being missing when you first run this
 
     ################################################################################################################################
 
@@ -107,6 +108,8 @@ if __name__ == '__main__':
         with open(out_file, 'w') as f:
             f.write(text.__str__())
 
+    global_configs = {}
+
     def find_story_files_without_mp3(filename):
         global RENDER_EVERY_SENTENCE 
         global TEST_GIBBERISH 
@@ -129,18 +132,7 @@ if __name__ == '__main__':
             if 'narration_config.txt' in files and 'story.mp3' not in files:
                 config_file_path = os.path.join(root, 'narration_config.txt')
                 config = read_config_from_file(config_file_path)                
-
-                # If the configuration file exists, use it to override the global settings
-
-                RENDER_EVERY_SENTENCE = config.get('RENDER_EVERY_SENTENCE', RENDER_EVERY_SENTENCE) if config else True
-                TEST_GIBBERISH = config.get('TEST_GIBBERISH', TEST_GIBBERISH) if config else True
-                TEST_EVERY_SENTENCE_FOR_GIBBERISH = config.get('TEST_EVERY_SENTENCE_FOR_GIBBERISH', TEST_EVERY_SENTENCE_FOR_GIBBERISH) if config else True
-                TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH = config.get('TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH', TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH) if config else 5
-                GIBBERISH_DETECTION_THRESHOLD = config.get('GIBBERISH_DETECTION_THRESHOLD', GIBBERISH_DETECTION_THRESHOLD) if config else 0.85
-                SPEAKER_SPEED = config.get('SPEAKER_SPEED', SPEAKER_SPEED) if config else 0.9
-                UPSAMPLE = config.get('UPSAMPLE', UPSAMPLE) if config else True
-                NOISE_REDUCTION_PROPORTION = config.get('NOISE_REDUCTION_PROPORTION', NOISE_REDUCTION_PROPORTION) if config else 0.4
-                VOICE_TO_USE = config.get('VOICE_TO_USE', VOICE_TO_USE) if config else "coqui_voices\\basso.wav"
+                global_configs[root] = config
 
         return story_files_without_mp3
 
@@ -239,11 +231,8 @@ if __name__ == '__main__':
 
 ################################################################################
 
-
     # Get device
     device = "cuda" if torch.cuda.is_available() else "cpu"
-
-
 
     from pedalboard import Pedalboard, Chorus, Reverb, PitchShift, Limiter, Gain
     from pedalboard.io import AudioFile
@@ -275,33 +264,30 @@ if __name__ == '__main__':
 
 
     story_files = find_story_files_without_mp3('story.txt')
-    
-    for file, directory in story_files.items():
-    # Read the configuration from the file in the current directory
-        config_file_path = os.path.join(directory, 'narration_config.txt')
-        config = read_config_from_file(config_file_path)
-
-        # If the configuration file exists, use it to override the global settings
-        if config:
-            RENDER_EVERY_SENTENCE = config.get('RENDER_EVERY_SENTENCE', RENDER_EVERY_SENTENCE)
-            TEST_GIBBERISH = config.get('TEST_GIBBERISH', TEST_GIBBERISH)
-            TEST_EVERY_SENTENCE_FOR_GIBBERISH = config.get('TEST_EVERY_SENTENCE_FOR_GIBBERISH', TEST_EVERY_SENTENCE_FOR_GIBBERISH)
-            TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH = config.get('TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH', TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH)
-            GIBBERISH_DETECTION_THRESHOLD = config.get('GIBBERISH_DETECTION_THRESHOLD', GIBBERISH_DETECTION_THRESHOLD)
-            SPEAKER_SPEED = config.get('SPEAKER_SPEED', SPEAKER_SPEED)
-            UPSAMPLE = config.get('UPSAMPLE', UPSAMPLE)
-            NOISE_REDUCTION_PROPORTION = config.get('NOISE_REDUCTION_PROPORTION', NOISE_REDUCTION_PROPORTION)
-            VOICE_TO_USE = config.get('VOICE_TO_USE', VOICE_TO_USE)
-    
-    
-    story_files = find_story_files_without_mp3('story.txt')
-
+ 
     for file, directory in story_files.items():
         print(f"File: {file}, Directory: {directory}")
+        if directory in global_configs:
+        # Read the configuration from the file in the current directory
+            #config_file_path = os.path.join(directory, 'narration_config.txt')
+            #config = read_config_from_file(config_file_path)
+
+            config = global_configs[directory]
+            # If the configuration file exists, use it to override the global settings
+            if config:
+                RENDER_EVERY_SENTENCE = config.get('RENDER_EVERY_SENTENCE', RENDER_EVERY_SENTENCE)
+                TEST_GIBBERISH = config.get('TEST_GIBBERISH', TEST_GIBBERISH)
+                TEST_EVERY_SENTENCE_FOR_GIBBERISH = config.get('TEST_EVERY_SENTENCE_FOR_GIBBERISH', TEST_EVERY_SENTENCE_FOR_GIBBERISH)
+                TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH = config.get('TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH', TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH)
+                GIBBERISH_DETECTION_THRESHOLD = config.get('GIBBERISH_DETECTION_THRESHOLD', GIBBERISH_DETECTION_THRESHOLD)
+                SPEAKER_SPEED = config.get('SPEAKER_SPEED', SPEAKER_SPEED)
+                UPSAMPLE = config.get('UPSAMPLE', UPSAMPLE)
+                NOISE_REDUCTION_PROPORTION = config.get('NOISE_REDUCTION_PROPORTION', NOISE_REDUCTION_PROPORTION)
+                VOICE_TO_USE = config.get('VOICE_TO_USE', VOICE_TO_USE)
+
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         prefix = os.path.basename(directory)
-
 
         filename = f"{prefix}_output_{timestamp}.wav"
         fx_filename = f"{prefix}_output_{timestamp}_fx.wav"
@@ -312,6 +298,23 @@ if __name__ == '__main__':
         #mp3_filename = f"{nickname}_output_{timestamp}.mp3"                
 
         if not any(f.endswith('_fx.wav') for f in os.listdir(directory)):
+
+            # If the configuration file exists, use it to override the global settings
+            if directory in global_configs:
+                config = global_configs[directory]
+                RENDER_EVERY_SENTENCE = config.get('RENDER_EVERY_SENTENCE', RENDER_EVERY_SENTENCE) if config else True
+                TEST_GIBBERISH = config.get('TEST_GIBBERISH', TEST_GIBBERISH) if config else True
+                TEST_EVERY_SENTENCE_FOR_GIBBERISH = config.get('TEST_EVERY_SENTENCE_FOR_GIBBERISH', TEST_EVERY_SENTENCE_FOR_GIBBERISH) if config else True
+                TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH = config.get('TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH', TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH) if config else 5
+                GIBBERISH_DETECTION_THRESHOLD = config.get('GIBBERISH_DETECTION_THRESHOLD', GIBBERISH_DETECTION_THRESHOLD) if config else 0.85
+                SPEAKER_SPEED = config.get('SPEAKER_SPEED', SPEAKER_SPEED) if config else 0.9
+                UPSAMPLE = config.get('UPSAMPLE', UPSAMPLE) if config else True
+                NOISE_REDUCTION_PROPORTION = config.get('NOISE_REDUCTION_PROPORTION', NOISE_REDUCTION_PROPORTION) if config else 0.4
+                VOICE_TO_USE = config.get('VOICE_TO_USE', VOICE_TO_USE) if config else "coqui_voices\\basso.wav"
+
+
+
+
             with open(file=file, mode="r", encoding="utf-8") as chapter_text_file:
                 discard_starts = [
                     "### Instruction:",
