@@ -21,6 +21,9 @@ if __name__ == '__main__':
 
     # pip install anything else that complains about being missing when you first run this
 
+
+
+
     from datetime import datetime
     import nltk
     from tqdm import tqdm
@@ -56,6 +59,16 @@ if __name__ == '__main__':
     UPSAMPLE = True
     NOISE_REDUCTION_PROPORTION = 0.4
     VOICE_TO_USE = "coqui_voices\\basso.wav"
+
+    SIGNAL_GAIN_dB = -3.0
+    SIGNAL_REVERB_ROOM_SIZE = 0.06
+    SIGNAL_REVERB_DAMPING = 0.4
+    SIGNAL_REVERB_WET_LEVEL = 0.15
+    SIGNAL_REVERB_DRY_LEVEL = 0.7
+    SIGNAL_REVERB_WIDTH = 0.9
+    SIGNAL_REVERB_FREEZE = 0.0
+
+    ACCENT_TO_USE = 'en' # 'en', 'es', 'fr', 'de', 'it', 'pt', 'pl', 'tr', 'ru', 'nl', 'cs', 'ar', 'zh-cn', 'hu', 'ko', 'ja', 'hi'
 
     def contains_substring(main_string, substring):
         return substring in main_string  
@@ -111,15 +124,15 @@ if __name__ == '__main__':
     global_configs = {}
 
     def find_story_files_without_mp3(filename):
-        global RENDER_EVERY_SENTENCE 
-        global TEST_GIBBERISH 
-        global TEST_EVERY_SENTENCE_FOR_GIBBERISH
-        global TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH 
-        global GIBBERISH_DETECTION_THRESHOLD 
-        global SPEAKER_SPEED
-        global UPSAMPLE 
-        global NOISE_REDUCTION_PROPORTION 
-        global VOICE_TO_USE 
+        #global RENDER_EVERY_SENTENCE 
+        #global TEST_GIBBERISH 
+        #global TEST_EVERY_SENTENCE_FOR_GIBBERISH
+        #global TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH 
+        #global GIBBERISH_DETECTION_THRESHOLD 
+        #global SPEAKER_SPEED
+        #global UPSAMPLE 
+        #global NOISE_REDUCTION_PROPORTION 
+        #global VOICE_TO_USE 
 
         story_files_without_mp3 = {}
 
@@ -214,6 +227,7 @@ if __name__ == '__main__':
                 for line in file:
                     name, value = line.strip().split('=')
                     value = value.strip() 
+                    name = name.strip() 
                     if value.lower() == 'true':
                         config[name] = True
                     elif value.lower() == 'false':
@@ -253,37 +267,10 @@ if __name__ == '__main__':
     #C:\Users\new\AppData\Local\tts\tts_models--multilingual--multi-dataset--xtts_v2\config.json
     tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2", config_path="./tts_config.json", progress_bar=True).to(device)
 
-
-    # Make a Pedalboard object, containing multiple audio plugins:
-    board = Pedalboard([#PitchShift(semitones = -1.0), 
-                        Gain(gain_db = -1.5),
-                        Reverb(room_size = 0.06, damping = 0.4, wet_level = 0.15, dry_level = 0.7, width = .9, freeze_mode = 0.0),
-                        Gain(gain_db = -1.5)
-                        #Limiter(threshold_db = -6.0,  release_ms = 100.0)]
-                        ])
-
-
     story_files = find_story_files_without_mp3('story.txt')
- 
+
     for file, directory in story_files.items():
         print(f"File: {file}, Directory: {directory}")
-        if directory in global_configs:
-        # Read the configuration from the file in the current directory
-            #config_file_path = os.path.join(directory, 'narration_config.txt')
-            #config = read_config_from_file(config_file_path)
-
-            config = global_configs[directory]
-            # If the configuration file exists, use it to override the global settings
-            if config:
-                RENDER_EVERY_SENTENCE = config.get('RENDER_EVERY_SENTENCE', RENDER_EVERY_SENTENCE)
-                TEST_GIBBERISH = config.get('TEST_GIBBERISH', TEST_GIBBERISH)
-                TEST_EVERY_SENTENCE_FOR_GIBBERISH = config.get('TEST_EVERY_SENTENCE_FOR_GIBBERISH', TEST_EVERY_SENTENCE_FOR_GIBBERISH)
-                TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH = config.get('TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH', TOTAL_ATTEMPTS_TO_MAKE_ONE_SENTENCE_WITHOUT_GIBBERSISH)
-                GIBBERISH_DETECTION_THRESHOLD = config.get('GIBBERISH_DETECTION_THRESHOLD', GIBBERISH_DETECTION_THRESHOLD)
-                SPEAKER_SPEED = config.get('SPEAKER_SPEED', SPEAKER_SPEED)
-                UPSAMPLE = config.get('UPSAMPLE', UPSAMPLE)
-                NOISE_REDUCTION_PROPORTION = config.get('NOISE_REDUCTION_PROPORTION', NOISE_REDUCTION_PROPORTION)
-                VOICE_TO_USE = config.get('VOICE_TO_USE', VOICE_TO_USE)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -310,10 +297,23 @@ if __name__ == '__main__':
                 SPEAKER_SPEED = config.get('SPEAKER_SPEED', SPEAKER_SPEED) if config else 0.9
                 UPSAMPLE = config.get('UPSAMPLE', UPSAMPLE) if config else True
                 NOISE_REDUCTION_PROPORTION = config.get('NOISE_REDUCTION_PROPORTION', NOISE_REDUCTION_PROPORTION) if config else 0.4
-                VOICE_TO_USE = config.get('VOICE_TO_USE', VOICE_TO_USE) if config else "coqui_voices\\basso.wav"
+                VOICE_TO_USE = config.get('VOICE_TO_USE', VOICE_TO_USE) if config else "coqui_voices\\twobob_master.wav"
+                SIGNAL_GAIN_dB = config.get('SIGNAL_GAIN_dB', SIGNAL_GAIN_dB) if config else 3.0
+                SIGNAL_REVERB_ROOM_SIZE = config.get('SIGNAL_REVERB_ROOM_SIZE', SIGNAL_REVERB_ROOM_SIZE) if config else 0.06
+                SIGNAL_REVERB_DAMPING = config.get('SIGNAL_REVERB_DAMPING', SIGNAL_REVERB_DAMPING) if config else 0.4
+                SIGNAL_REVERB_WET_LEVEL = config.get('SIGNAL_REVERB_WET_LEVEL', SIGNAL_REVERB_WET_LEVEL) if config else 0.15
+                SIGNAL_REVERB_DRY_LEVEL = config.get('SIGNAL_REVERB_DRY_LEVEL', SIGNAL_REVERB_DRY_LEVEL) if config else 0.7
+                SIGNAL_REVERB_WIDTH = config.get('SIGNAL_REVERB_WIDTH', SIGNAL_REVERB_WIDTH) if config else 0.9
+                SIGNAL_REVERB_FREEZE = config.get('SIGNAL_REVERB_FREEZE', SIGNAL_REVERB_FREEZE) if config else 0.0
+                ACCENT_TO_USE = config.get('ACCENT_TO_USE', ACCENT_TO_USE) if config else 'en' 
+                ACCENT_TO_USE = ACCENT_TO_USE.lower()
 
-
-
+                # Make a Pedalboard object, containing multiple audio plugins:
+                board = Pedalboard([#PitchShift(semitones = -1.0), 
+                                    Gain(gain_db = SIGNAL_GAIN_dB * 0.5),
+                                    Reverb(room_size = SIGNAL_REVERB_ROOM_SIZE, damping = SIGNAL_REVERB_DAMPING, wet_level = SIGNAL_REVERB_WET_LEVEL, dry_level = SIGNAL_REVERB_DRY_LEVEL, width = SIGNAL_REVERB_WIDTH, freeze_mode = SIGNAL_REVERB_FREEZE),
+                                    Gain(gain_db = SIGNAL_GAIN_dB * 0.5)
+                                    ])     
 
             with open(file=file, mode="r", encoding="utf-8") as chapter_text_file:
                 discard_starts = [
@@ -338,8 +338,8 @@ if __name__ == '__main__':
 
                 text = chapter_text_file.read()
                 sentences = nltk.sent_tokenize(text)
-                filtered_sentences = [sentence for sentence in sentences if not any(sentence.startswith(s) for s in discard_starts)]
 
+                filtered_sentences = [sentence for sentence in sentences if not any(sentence.startswith(s) for s in discard_starts)]
                 if len(sentences) > len(filtered_sentences):
                     print(f"{ len(sentences) - len(filtered_sentences) } sentences filtered")
 
@@ -404,7 +404,7 @@ if __name__ == '__main__':
                                                     speed=SPEAKER_SPEED, 
                                                     speaker_wav=VOICE_TO_USE, 
                                                     split_sentences=False, 
-                                                    language="en", 
+                                                    language=ACCENT_TO_USE, 
                                                     file_path=sentence_filename)                                           
                                     #test it for validity (confidence that it is "a known language to whisper")
                                     total_gibberish = gibberish_extractor.process_audio(sentence_filename, GIBBERISH_DETECTION_THRESHOLD)
@@ -415,7 +415,7 @@ if __name__ == '__main__':
                                                 speed=SPEAKER_SPEED, 
                                                 speaker_wav=VOICE_TO_USE, 
                                                 split_sentences=False, 
-                                                language="it", 
+                                                language=ACCENT_TO_USE, 
                                                 file_path=sentence_filename)
                                 
                             if UPSAMPLE:
