@@ -53,7 +53,7 @@ def infer(checkpoint, wav_file, sample_rate=22050, steps=8, gt=False, device='cu
     global hparams
     global noise_schedule
     if model is None:
-        hparams = OC.load(r'C:\Users\new\dev\tts\nuwave2\hparameter.yaml')
+        hparams = OC.load(r'.\nuwave2\hparameter.yaml')
         os.makedirs(hparams.log.test_result_dir, exist_ok=True)
 
         if steps is None or steps == 8:
