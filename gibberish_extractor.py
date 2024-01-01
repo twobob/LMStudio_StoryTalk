@@ -8,7 +8,7 @@ import ast
 
 import time
 
-TEMP_PATH = r'R:\temp_segment.wav' # r'./temp_segment.wav'
+TEMP_PATH = r'./temp_segment.wav'
 
 GIBBERISH_FILE = "incomprehensible_segments.txt"
 
