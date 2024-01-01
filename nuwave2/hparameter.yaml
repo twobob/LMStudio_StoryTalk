@@ -45,4 +45,4 @@ log:
   name: 'nuwave2'
   checkpoint_dir: 'checkpoint'
   tensorboard_dir: 'tensorboard'
-  test_result_dir: 'C:\\Users\\new\\dev\\tts\\nuwave2\\test_sample\\result'
+  test_result_dir: '.\\nuwave2\\test_sample\\result'
