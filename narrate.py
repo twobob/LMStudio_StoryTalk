@@ -260,7 +260,7 @@ if __name__ == '__main__':
                 progress_bar (bool, optional): Whether to pring a progress bar while downloading a model. Defaults to True.
                 DEPRECATED: gpu (bool, optional): Enable/disable GPU. Some models might be too slow on CPU. Defaults to False.
     '''
-    #C:\Users\new\AppData\Local\tts\tts_models--multilingual--multi-dataset--xtts_v2\config.json
+ 
     tts = TTS(model_name="tts_models/multilingual/multi-dataset/xtts_v2", config_path="./tts_config.json", progress_bar=True).to(device)
 
     story_files = find_story_files_without_mp3('story.txt')
@@ -412,7 +412,7 @@ if __name__ == '__main__':
                             if UPSAMPLE:
 
                                 input_file = sentence_filename
-                                checkpoint = "C:\\Users\\new\\dev\\tts\\nuwave2\\nuwave2_02_16_13_epoch=629.ckpt"
+                                checkpoint = ".\\nuwave2\\nuwave2_02_16_13_epoch=629.ckpt"
                                 sample_rate = 24000
 
                                 new_file = inference.infer(checkpoint=checkpoint,wav_file=sentence_filename, sample_rate=sample_rate, steps=8, gt=False, device=device)
