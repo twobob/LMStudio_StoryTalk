@@ -419,7 +419,7 @@ if __name__ == '__main__':
 
                                 #swap result to old output                                 
                                 edited_file_path = sentence_filename.rsplit(".", 1)[0] + "_edited.wav"
-                                os.replace( r"C:\Users\new\dev\tts\nuwave2\test_sample\result\result.wav", edited_file_path)
+                                os.replace( r".\nuwave2\test_sample\result\result.wav", edited_file_path)
                                 clean_and_backup_audio(edited_file_path, NOISE_REDUCTION_PROPORTION)   
                                 
                     # Concatenate all rendered sentences into a single audio file
